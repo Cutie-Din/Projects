@@ -13,28 +13,38 @@ class ExpenseItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Card(
           child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(expense.title),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            child: Text(
+              expense.title,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
           const SizedBox(
             height: 4,
           ),
-          Row(
-            children: [
-              Text('\$${expense.amount.toStringAsFixed(2)}'),
-              const Spacer(),
-              Row(
-                children: [
-                  Icon(categoryIcons[expense.category]),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(expense.formattedDate),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+            child: Row(
+              children: [
+                Text('\$${expense.amount.toStringAsFixed(2)}'),
+                const Spacer(),
+                Row(
+                  children: [
+                    Icon(categoryIcons[expense.category]),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(expense.formattedDate),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ) //TODO: Hiển thị ExpenseItem
