@@ -38,6 +38,8 @@ dependencies:
   connectivity_plus: 
   path_provider:
   dio:
+  firebase_core:
+  firebase_auth:
 
 dev_dependencies:
   flutter_test:
