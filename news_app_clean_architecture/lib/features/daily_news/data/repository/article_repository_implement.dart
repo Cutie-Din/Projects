@@ -1,15 +1,16 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:news_app_clean_architecture/features/daily_news/core/constants/constants.dart';
-import 'package:news_app_clean_architecture/features/daily_news/data/models/article.dart';
-import 'package:news_app_clean_architecture/features/daily_news/data/resources/data_state.dart';
-import 'package:news_app_clean_architecture/features/daily_news/data/sources/remote/news_api_service.dart';
+import 'package:news_app_clean_architecture/core/resources/data_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/models/article_model.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
 
-class ArticleRepositoryImpl extends ArticleRepository {
+import '../../../../core/constants/constants.dart';
+
+class ArticleRepositoryImplement implements ArticleRepository {
   final NewsApiService _newsApiService;
-  ArticleRepositoryImpl(this._newsApiService);
+  ArticleRepositoryImplement(this._newsApiService);
 
   @override
   Future<DataState<List<ArticleModel>>> getNewsArticles() async {
@@ -19,18 +20,16 @@ class ArticleRepositoryImpl extends ArticleRepository {
         country: countryQuery,
         category: categoryQuery,
       );
-
       if (httpResponse.response.statusCode == HttpStatus.ok) {
-        return DataSuccess(httpResponse.data);
+        return DataSuccess(httpResponse.data.articles);
       } else {
-        return DataFailed(DioError(
-          error: httpResponse.response.statusMessage,
-          response: httpResponse.response,
-          type: DioErrorType.badResponse,
-          requestOptions: httpResponse.response.requestOptions,
-        ));
+        return DataFailed(DioException(
+            requestOptions: httpResponse.response.requestOptions,
+            error: httpResponse.response.statusMessage,
+            response: httpResponse.response,
+            type: DioExceptionType.badResponse));
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return DataFailed(e);
     }
   }
