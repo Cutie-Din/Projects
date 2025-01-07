@@ -10,10 +10,14 @@ class WeatherEntity {
   });
 
   factory WeatherEntity.fromJson(Map<String, dynamic> json) {
+    // Chuyển từ Kelvin sang Celsius
+    double kelvinTemperature = json['main']['temp'];
+    double temperatureInCelsius = kelvinTemperature - 273.15;
+
     return WeatherEntity(
       cityName: json['name'],
       description: json['weather'][0]['description'],
-      temperature: json['main']['temp'],
+      temperature: temperatureInCelsius, // Trả về nhiệt độ tính theo Celsius
     );
   }
 }
