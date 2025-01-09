@@ -1,5 +1,7 @@
 import 'package:cat_auth_clean_architecture/core/error/failures.dart';
 import 'package:cat_auth_clean_architecture/features/authentication/data/data_sources/cat_auth_api_service.dart';
+import 'package:cat_auth_clean_architecture/features/authentication/data/models/cat_signin_model.dart';
+import 'package:cat_auth_clean_architecture/features/authentication/data/models/cat_signup_model.dart';
 import 'package:cat_auth_clean_architecture/features/authentication/domain/entities/cat_signin.dart';
 import 'package:cat_auth_clean_architecture/features/authentication/domain/entities/cat_signup.dart';
 import 'package:cat_auth_clean_architecture/features/authentication/domain/repositories/cat_auth_repository.dart';
@@ -10,7 +12,7 @@ class CatAuthRepositoryImp implements CatAuthRepository {
   CatAuthRepositoryImp(this.catAuthApiService);
 
   @override
-  Future<Either<Failure, CatSignIn>> postCatSignIn(String email, String password) async {
+  Future<Either<Failure, CatSignInModel>> postCatSignIn(String email, String password) async {
     try {
       print('Repository: $email, $password');
       final signin = await catAuthApiService.postCatSignIn(email, password);
@@ -22,7 +24,7 @@ class CatAuthRepositoryImp implements CatAuthRepository {
   }
 
   @override
-  Future<Either<Failure, CatSignUp>> postCatSignUp(
+  Future<Either<Failure, CatSignUpModel>> postCatSignUp(
       String email, String username, String password) async {
     try {
       final signup = await catAuthApiService.postCatSignUp(email, username, password);
