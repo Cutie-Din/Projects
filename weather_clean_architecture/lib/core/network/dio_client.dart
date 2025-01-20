@@ -1,5 +1,3 @@
-// lib/core/network/dio_client.dart
-
 import 'package:dio/dio.dart';
 import 'package:weather_clean_architecture/core/utils/constants.dart';
 import 'package:weather_clean_architecture/features/weather/data/data_sources/weather_api_service.dart';

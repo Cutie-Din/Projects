@@ -21,7 +21,7 @@ class UserCard extends StatelessWidget {
           children: [
             // Circular Avatar
             CircleAvatar(
-              radius: 130, // Larger avatar size
+              radius: 150, // Larger avatar size
               backgroundImage: NetworkImage(user.avatar_url),
             ),
             const SizedBox(height: 16),

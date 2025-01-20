@@ -18,7 +18,7 @@ class CatFactsApiServiceOld {
       } else {
         throw Exception('Failed to load cat facts: ${response.statusCode}');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception('DioError: ${e.message}');
     } catch (e) {
       throw Exception('Error: $e');

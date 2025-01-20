@@ -1,5 +1,4 @@
-import 'package:cat_image_clean_architecture/core/error/exceptions.dart';
-import 'package:cat_image_clean_architecture/core/error/failures.dart';
+import 'package:cat_image_clean_architecture/core/network/dio_client.dart';
 import 'package:cat_image_clean_architecture/data/data_source/cat_image_service.dart';
 import 'package:cat_image_clean_architecture/data/model/cat_image_model.dart';
 import 'package:cat_image_clean_architecture/domain/entity/cat_image.dart';
@@ -11,13 +10,13 @@ class CatImageRepositoryImpl implements CatImageRepository {
 
   CatImageRepositoryImpl(this.catImageService);
   @override
-  Future<Either<Failure, List<CatImage>>> getCatImages() async {
+  Future<Either<DioClient, List<CatImage>>> getCatImages() async {
     try {
       final response = await catImageService.getCatImages(10);
       final catImages = response.map((model) => CatImage(model.url)).toList();
       return Right(catImages);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(DioClient());
     }
   }
 }

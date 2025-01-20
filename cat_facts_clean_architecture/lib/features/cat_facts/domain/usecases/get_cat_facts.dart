@@ -8,7 +8,7 @@ class GetCatFacts {
 
   GetCatFacts(this.repository);
 
-  Future<Either<Failure, CatFacts>> call() async {
+  Future<Either<Failure, CatFacts>> getCatFacts() async {
     return await repository.getCatFacts();
   }
 }

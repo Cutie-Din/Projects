@@ -8,9 +8,11 @@ class DioClient {
   DioClient(this._dio) {
     _dio
       ..options = BaseOptions(
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-      )
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          headers: {
+            'Authorization': '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',
+          })
       ..interceptors.addAll([
         LoggerInterceptor(dioClient: this),
       ]);

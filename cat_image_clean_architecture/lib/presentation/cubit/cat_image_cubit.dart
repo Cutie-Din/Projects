@@ -1,4 +1,4 @@
-import 'package:cat_image_clean_architecture/core/error/failures.dart';
+import 'package:cat_image_clean_architecture/core/network/dio_client.dart';
 import 'package:cat_image_clean_architecture/domain/entity/cat_image.dart';
 import 'package:cat_image_clean_architecture/domain/usecase/get_cat_image.dart';
 import 'package:equatable/equatable.dart';
@@ -18,7 +18,7 @@ class CatImageCubit extends Cubit<CatImageState> {
     final result = await catImageRepository.getCatImages();
 
     result.fold(
-      (failure) => emit(CatImageError(failure.message)),
+      (failure) => emit(CatImageError(DioClient())),
       (catImages) => emit(CatImageLoaded(catImages)),
     );
   }

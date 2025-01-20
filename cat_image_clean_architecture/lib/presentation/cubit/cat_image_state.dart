@@ -12,6 +12,6 @@ class CatImageLoaded extends CatImageState {
 }
 
 class CatImageError extends CatImageState {
-  final String message;
-  CatImageError(this.message);
+  final DioClient dio;
+  CatImageError(this.dio);
 }

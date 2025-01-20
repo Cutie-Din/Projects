@@ -7,9 +7,6 @@ class CatFactsModel extends CatFacts {
     return CatFactsModel(json['data'][0]);
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'data': [fact]
-    };
-  }
 }
+
+

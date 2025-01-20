@@ -10,24 +10,30 @@ class LoggerInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     print('🚀 [Yêu cầu] ${options.method} ${options.uri}');
-    print('Headers: ${options.headers}');
-    print('Body: ${options.data}');
     super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     print('✅ [Phản hồi] ${response.statusCode} ${response.requestOptions.uri}');
-    print('Data: ${response.data}');
     super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    // Capture the error message and set it in DioClient
-    final errorMessage = '❌ [Lỗi] ${err.type} ${err.message}';
-    dioClient.setErrorMessage(errorMessage); // Set error message in DioClient
+    String errorMessage = '❌ [Lỗi] ${err.type}';
+
+    if (err.response != null) {
+      final statusCode = err.response?.statusCode;
+      final responseData = err.response?.data;
+      errorMessage += '\n📋 [Chi tiết lỗi]: StatusCode: $statusCode, Data: $responseData';
+    } else {
+      errorMessage += '\n📋 [Chi tiết lỗi]: Không có phản hồi từ server.';
+    }
+
+    dioClient.setErrorMessage(errorMessage); // Lưu error message vào DioClient
     print(errorMessage);
+
     super.onError(err, handler);
   }
 }

@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 
-final _firebase = FirebaseAuth.instance;
+import 'package:chat_app/widgets/user_image_pick.dart';
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final SupabaseClient _supabase = Supabase.instance.client;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -16,30 +19,79 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLogin = true;
   var _enteredEmail = '';
   var _enteredPassword = '';
+  File? _selectedImage;
+  var _isAuthenticating = false;
+  var _enteredUsername = '';
 
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
 
-    if (!isValid) {
+    if (!isValid || (!_isLogin && _selectedImage == null)) {
       return;
     }
 
     _formKey.currentState!.save();
 
     try {
+      setState(() {
+        _isAuthenticating = true;
+      });
+
       if (_isLogin) {
-        final userCredentials = await _firebase.signInWithEmailAndPassword(
-            email: _enteredEmail, password: _enteredPassword);
+        // Xử lý đăng nhập
+        final userCredentials = await _supabase.auth.signInWithPassword(
+          email: _enteredEmail,
+          password: _enteredPassword,
+        );
       } else {
-        final userCredentials = await _firebase.createUserWithEmailAndPassword(
-            email: _enteredEmail, password: _enteredPassword);
+        // Xử lý đăng ký
+        final userCredentials = await _supabase.auth.signUp(
+          email: _enteredEmail,
+          password: _enteredPassword,
+        );
+
+        final userId = userCredentials.user?.id;
+
+        String? avatarUrl;
+        if (_selectedImage != null) {
+          // Đọc nội dung file
+          final fileName = DateTime.now().microsecondsSinceEpoch.toString();
+          final path = 'uploads/$fileName'; // Đảm bảo file có đuôi mở rộng
+
+          // Upload ảnh
+          final uploadResponse = await _supabase.storage.from('images').upload(
+                path,
+                _selectedImage!,
+              );
+
+          // Lấy URL truy cập công khai
+          avatarUrl = _supabase.storage.from('images').getPublicUrl(path);
+        }
+
+        // Kiểm tra widget còn tồn tại trước khi lưu thông tin người dùng
+
+        final response = await _supabase.from('images').upsert({
+          'id': userId,
+          'email': _enteredEmail,
+          'avatar_url': avatarUrl,
+          'user_name': _enteredUsername,
+        });
+
+        print('$response');
+
+        if (response.error != null) {
+          throw Exception("Upsert failed: ${response.error!.message}");
+        }
       }
-    } on FirebaseAuthException catch (error) {
-      if (error.code == 'email-already-in-use') {}
+    } catch (e) {
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error.message ?? 'Authentication failed!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     }
+    setState(() {
+      _isAuthenticating = false;
+    });
   }
 
   @override
@@ -66,6 +118,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            if (!_isLogin)
+                              UserImagePick(onPickImage: (pickedImage) {
+                                _selectedImage = pickedImage;
+                              }),
                             TextFormField(
                               autovalidateMode: AutovalidateMode.onUserInteraction,
                               decoration: const InputDecoration(
@@ -84,6 +140,22 @@ class _AuthScreenState extends State<AuthScreen> {
                                 _enteredEmail = value!;
                               },
                             ),
+                            if (!_isLogin)
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  labelText: 'Username',
+                                ),
+                                enableSuggestions: false,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty || value.trim().length < 4) {
+                                    return 'Please enter a valid username (at least 4 characters.)';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) {
+                                  _enteredUsername == value!;
+                                },
+                              ),
                             TextFormField(
                               autovalidateMode: AutovalidateMode.onUserInteraction,
                               decoration: const InputDecoration(
@@ -103,20 +175,23 @@ class _AuthScreenState extends State<AuthScreen> {
                             const SizedBox(
                               height: 12,
                             ),
-                            ElevatedButton(
-                              onPressed: _submit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                            if (_isAuthenticating) const CircularProgressIndicator(),
+                            if (!_isAuthenticating)
+                              ElevatedButton(
+                                onPressed: _submit,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                                ),
+                                child: Text(_isLogin ? 'Login' : 'SignUp'),
                               ),
-                              child: Text(_isLogin ? 'Login' : 'SignUp'),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isLogin = !_isLogin;
-                                  });
-                                },
-                                child: Text(_isLogin ? 'SignIn' : 'Have an account!'))
+                            if (!_isAuthenticating)
+                              TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isLogin = !_isLogin;
+                                    });
+                                  },
+                                  child: Text(_isLogin ? 'SignIn' : 'Have an account!'))
                           ],
                         )),
                   ),

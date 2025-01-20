@@ -54,7 +54,7 @@ class CatImageScreen extends StatelessWidget {
                 },
               );
             } else if (state is CatImageError) {
-              return Text(state.message);
+              return Text(state.dio.toString());
             } else {
               return Container();
             }

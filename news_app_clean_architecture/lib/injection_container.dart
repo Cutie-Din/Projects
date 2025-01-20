@@ -5,6 +5,7 @@ import 'package:news_app_clean_architecture/features/daily_news/data/repository/
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -21,4 +22,5 @@ Future<void> initializeDependencies() async {
 
   // Blocs
   sl.registerSingleton<RemoteArticleBloc>(RemoteArticleBloc(sl()));
+  sl.registerSingleton<RemoteArticleCubit>(RemoteArticleCubit(sl()));
 }

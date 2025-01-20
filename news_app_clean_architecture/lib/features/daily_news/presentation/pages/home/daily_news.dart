@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_cubit.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_tile.dart';
 
@@ -22,7 +23,7 @@ class DailyNews extends StatelessWidget {
   }
 
   _buildBody() {
-    return BlocBuilder<RemoteArticleBloc, RemoteArticleState>(builder: (_, state) {
+    return BlocBuilder<RemoteArticleCubit, RemoteArticleState>(builder: (_, state) {
       if (state is RemoteArticlesLoading) {
         return const Center(
           child: CupertinoActivityIndicator(),

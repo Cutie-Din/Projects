@@ -1,6 +1,6 @@
+import 'package:cat_image_clean_architecture/core/network/dio_client.dart';
 import 'package:dartz/dartz.dart';
-import '../error/failures.dart';
 
 abstract class UseCase<Type, Params> {
-  Future<Either<Failure, Type>> call(Params params);
+  Future<Either<DioClient, Type>> call(Params params);
 }

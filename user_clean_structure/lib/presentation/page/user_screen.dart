@@ -10,12 +10,11 @@ class UserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final scrollController = ScrollController();
 
-    // Thêm listener để kiểm tra khi người dùng kéo đến cuối danh sách
     scrollController.addListener(() {
       if (scrollController.position.pixels >= scrollController.position.maxScrollExtent) {
         final state = context.read<UserCubit>().state;
         if (state is UserLoaded && !state.hasReachedMax) {
-          context.read<UserCubit>().fetchUsers(isLoadMore: true); // Gọi fetch thêm dữ liệu
+          context.read<UserCubit>().fetchUsers(isLoadMore: true);
         }
       }
     });
@@ -29,22 +28,27 @@ class UserScreen extends StatelessWidget {
           if (state is UserInitial || state is UserLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is UserLoaded) {
-            return ListView.builder(
-              controller: scrollController,
-              itemCount: state.hasReachedMax ? state.users.length : state.users.length + 1,
-              itemBuilder: (context, index) {
-                if (index >= state.users.length) {
-                  return const Center(
-                      child: CircularProgressIndicator()); // Hiển thị vòng tròn tải thêm
-                }
-                final user = state.users[index];
-                return Column(
-                  children: [
-                    UserCard(user: user), // Hiển thị thông tin người dùng
-                    const SizedBox(height: 16),
-                  ],
-                );
+            return RefreshIndicator(
+              displacement: 10,
+              onRefresh: () async {
+                context.read<UserCubit>().fetchUsers(isLoadMore: false);
               },
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: state.hasReachedMax ? state.users.length : state.users.length + 1,
+                itemBuilder: (context, index) {
+                  if (index >= state.users.length) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final user = state.users[index];
+                  return Column(
+                    children: [
+                      UserCard(user: user),
+                      const SizedBox(height: 16),
+                    ],
+                  );
+                },
+              ),
             );
           } else if (state is UserError) {
             return Center(child: Text(state.errorMessage));

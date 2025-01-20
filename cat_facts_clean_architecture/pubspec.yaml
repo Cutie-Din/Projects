@@ -36,11 +36,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_bloc:
   bloc:
-  equatable: 
   get_it:
   dartz:
   dio:
   lottie:
+  device_preview:
 
 dev_dependencies:
   flutter_test:
